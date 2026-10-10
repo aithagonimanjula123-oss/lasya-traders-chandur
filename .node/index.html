@@ -636,8 +636,8 @@ async function saveProductAPI(p){
 
 async function removeProductAPI(id){
   const result=await apiFetch('/products/'+id,{method:'DELETE'});
-  if(!result){ showToast('Could not remove product. Server is unavailable.','error'); return; }
-  products=products.filter(p=>p.id!==id);
+  if(!result){ showToast('Could not remove product. Server is unavailable.','error'); return false; }
+  products=products.filter(p=>p.id!==id); return true;
 }
 
 async function saveOrderAPI(order){
@@ -1060,7 +1060,8 @@ async function submitProduct(){
 
 async function deleteProduct(id){
   if(!confirm('Remove this product from inventory?')) return;
-  await removeProductAPI(id);
+  const removed=await removeProductAPI(id);
+  if(!removed) return;
   renderInventory();
   showToast('Product removed.','success');
 }
