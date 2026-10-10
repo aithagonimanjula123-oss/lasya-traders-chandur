@@ -625,13 +625,13 @@ async function loadProducts(){
 async function loadOrders(){
   const d=await apiFetch('/orders');
   if(d&&Array.isArray(d)) orders=d;
-  // else keep local orders array unchanged
+  else { orders=[]; setApiStatus('offline'); }
 }
 
 async function saveProductAPI(p){
   const saved=await apiFetch('/products',{method:'POST',body:JSON.stringify(p)});
-  if(saved){ products.push(saved); showToast('Product saved ✓','success'); }
-  else { showToast('Product was not saved. Server is unavailable.','error'); }
+  if(saved){ products.push(saved); showToast('Product saved ✓','success'); return true; }
+  showToast('Product was not saved. Server is unavailable.','error'); return false;
 }
 
 async function removeProductAPI(id){
@@ -642,14 +642,16 @@ async function removeProductAPI(id){
 
 async function saveOrderAPI(order){
   const saved=await apiFetch('/orders',{method:'POST',body:JSON.stringify(order)});
-  if(saved) orders.push(saved);
-  else { showToast('Order was not saved. Server is unavailable.','error'); return; }
+  if(saved){ orders.push(saved); return true; }
+  showToast('Order was not saved. Server is unavailable.','error'); return false;
 }
 
 async function updateOrderStatusAPI(orderId,status){
-  await apiFetch('/orders/'+orderId,{method:'PUT',body:JSON.stringify({status})});
+  const result=await apiFetch('/orders/'+orderId,{method:'PUT',body:JSON.stringify({status})});
+  if(!result){ showToast('Could not update order. Server is unavailable.','error'); return false; }
   const o=orders.find(o=>o.id===orderId);
   if(o) o.status=status;
+  return true;
 }
 
 async function checkApiStatus(){
@@ -798,8 +800,9 @@ async function placeOrder(){
   const order={storeName,storePhone:storePhone||null,items,totalAmount,status:'Pending',paymentMethod:'Cash on Delivery',cashCollected:false,placedAt:new Date().toISOString()};
   const btn=document.getElementById('place-order-btn');
   btn.disabled=true;btn.textContent='Placing…';
-  await saveOrderAPI(order);
+  const saved=await saveOrderAPI(order);
   btn.disabled=false;btn.textContent='Place Order (Cash on Delivery) →';
+  if(!saved) return;
   closeCart();
   cart={};updateCartRibbon();renderOwnerGrid();
   document.getElementById('store-name-input').value='';
@@ -1003,7 +1006,8 @@ async function renderEmpOrders(){
 }
 
 async function changeOrderStatus(id,status){
-  await updateOrderStatusAPI(id,status);
+  const updated=await updateOrderStatusAPI(id,status);
+  if(!updated) return;
   showToast(`Order #${id} → ${status}`,'success');
   renderEmpOrders();
   renderEmpDashboard();
@@ -1012,10 +1016,10 @@ async function changeOrderStatus(id,status){
 async function markCashCollected(id){
   const o=orders.find(x=>x.id===id);
   if(!o) return;
+  const result=await apiFetch('/orders/'+id,{method:'PUT',body:JSON.stringify({status:'Cash Collected',cashCollected:true})});
+  if(!result){ showToast('Could not update cash collection. Server is unavailable.','error'); return; }
   o.cashCollected=true;
   o.status='Cash Collected';
-  // Persist to backend
-  await apiFetch('/orders/'+id,{method:'PUT',body:JSON.stringify({status:'Cash Collected',cashCollected:true})});
   showToast(`Cash collected for Order #${id} ✓`,'success');
   renderEmpOrders();
   renderEmpDashboard();
@@ -1047,7 +1051,8 @@ async function submitProduct(){
   const stock=parseInt(document.getElementById('f-stock').value,10);
   const img=document.getElementById('f-img').value.trim();
   if(!name||!cat||isNaN(price)||price<0||isNaN(stock)||stock<0){showToast('Fill in all required fields correctly.','error');return;}
-  await saveProductAPI({name,category:cat,price,stock,imageUrl:img||null});
+  const saved=await saveProductAPI({name,category:cat,price,stock,imageUrl:img||null});
+  if(!saved) return;
   ['f-name','f-cat','f-price','f-stock','f-img'].forEach(id=>{document.getElementById(id).value='';});
   const msg=document.getElementById('f-success');msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2500);
   renderInventory();
