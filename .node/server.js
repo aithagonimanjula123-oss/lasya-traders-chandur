@@ -40,25 +40,10 @@ async function initDb() {
       value TEXT NOT NULL
     );
   `);
-  // Seed only once ever, not whenever inventory becomes empty.
-  const marker = await pool.query("SELECT value FROM app_meta WHERE key = 'initial_products_seeded'");
-  if (marker.rowCount === 0) {
-    const count = await pool.query('SELECT COUNT(*)::int AS n FROM products');
-    if (Number(count.rows[0].n) === 0) {
-      const seeds = [
-        ['Dove Soap Bar','Soaps',28,240],['Dettol Hand Wash 200ml','Soaps',65,180],
-        ['Lux Rose Soap','Soaps',22,310],['Dairy Milk 50g','Chocolates',42,500],
-        ['KitKat 4-Finger','Chocolates',58,320],['Munch Bar (10-pack)','Chocolates',95,12],
-        ['Colgate Toothbrush','Accessories',35,430],['Scotch-Brite Scrubber','Accessories',48,200],
-        ['Parle-G Biscuits 200g','Snacks',20,600],['Real Fruit Juice 1L','Beverages',85,150],
-        ['Tropicana Orange 1L','Beverages',90,8],['Haldirams Namkeen 200g','Snacks',55,280]
-      ];
-      for (const p of seeds) await pool.query(
-        'INSERT INTO products (name,category,price,stock) VALUES ($1,$2,$3,$4)', p
-      );
-    }
-    await pool.query("INSERT INTO app_meta (key,value) VALUES ('initial_products_seeded','true') ON CONFLICT (key) DO NOTHING");
-  }
+  // Intentionally do not seed sample products. An empty inventory must stay empty.
+  await pool.query(
+    "INSERT INTO app_meta (key,value) VALUES ('initial_products_seeded','true') ON CONFLICT (key) DO NOTHING"
+  );
 }
 
 function requireDb(req,res,next) {
