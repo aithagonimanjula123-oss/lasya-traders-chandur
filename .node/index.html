@@ -1088,23 +1088,6 @@ function formatDate(iso){if(!iso)return'';const d=new Date(iso);return d.toLocal
 function formatDay(d){const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
 function shortDay(d){const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-IN',{weekday:'short'}).replace('.','');}
 
-/* ════════════════════════════════════════
-   SEED DATA
-════════════════════════════════════════ */
-const SEED_PRODUCTS=[
-  {id:1, name:'Dove Soap Bar',         category:'Soaps',       price:28, stock:240,imageUrl:null},
-  {id:2, name:'Dettol Hand Wash 200ml',category:'Soaps',       price:65, stock:180,imageUrl:null},
-  {id:3, name:'Lux Rose Soap',         category:'Soaps',       price:22, stock:310,imageUrl:null},
-  {id:4, name:'Dairy Milk 50g',        category:'Chocolates',  price:42, stock:500,imageUrl:null},
-  {id:5, name:'KitKat 4-Finger',       category:'Chocolates',  price:58, stock:320,imageUrl:null},
-  {id:6, name:'Munch Bar (10-pack)',    category:'Chocolates',  price:95, stock:12, imageUrl:null},
-  {id:7, name:'Colgate Toothbrush',    category:'Accessories', price:35, stock:430,imageUrl:null},
-  {id:8, name:'Scotch-Brite Scrubber', category:'Accessories', price:48, stock:200,imageUrl:null},
-  {id:9, name:'Parle-G Biscuits 200g', category:'Snacks',      price:20, stock:600,imageUrl:null},
-  {id:10,name:'Real Fruit Juice 1L',   category:'Beverages',   price:85, stock:150,imageUrl:null},
-  {id:11,name:'Tropicana Orange 1L',   category:'Beverages',   price:90, stock:8,  imageUrl:null},
-  {id:12,name:'Haldirams Namkeen 200g',category:'Snacks',      price:55, stock:280,imageUrl:null},
-];
 
 /* ════════════════════════════════════════
    INIT
