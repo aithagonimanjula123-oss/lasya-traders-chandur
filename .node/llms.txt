@@ -3,7 +3,7 @@
 > Wholesale grocery and FMCG supply for grocery retailers in Chandur, Telangana, India.
 
 ## Website
-- https://lasya-traders-frontend-latest.onrender.com/
+- https://lasyatradersshops.netlify.app/
 
 ## Business summary
 Lasya Traders provides a client ordering portal for grocery store owners and retailers. Visitors can sign in to browse the available catalogue and submit store orders. Product availability changes with inventory.
