@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://lasya-traders-frontend-latest.onrender.com/sitemap.xml
